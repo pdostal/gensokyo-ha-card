@@ -63,7 +63,7 @@ class GensokyoRadioCard extends HTMLElement {
   }
 
   getCardSize() {
-    return 4;
+    return 1;
   }
 
   static getStubConfig(hass) {
@@ -89,14 +89,18 @@ class GensokyoRadioCard extends HTMLElement {
     const album = attrs.media_album_name || "";
     const circle = attrs.media_album_artist || "";
     const year = attrs.year || "";
-    const rating = attrs.rating || "";
-    const timesRated = attrs.times_rated || 0;
-    const listeners = attrs.listeners || 0;
+    const albumId = attrs.album_id || "";
     const albumArt = attrs.entity_picture || "";
-    const streamUrl = attrs.stream_url || "https://stream.gensokyoradio.net/1/";
 
-    const isTargetPlaying = targetState === "playing";
-    const showControls = !!targetEntityId;
+    const albumUrl = albumId
+      ? `https://gensokyoradio.net/music/album/${encodeURIComponent(albumId)}/`
+      : "https://gensokyoradio.net/";
+
+    const albumLine = [
+      album,
+      circle && circle !== artist ? circle : "",
+      year ? `(${year})` : "",
+    ].filter(Boolean).join(" · ");
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -119,219 +123,107 @@ class GensokyoRadioCard extends HTMLElement {
           color: var(--text-primary);
         }
 
-        .art-wrapper {
-          position: relative;
-          width: 100%;
-          padding-top: 56.25%;
-          background: #0d0d1a;
-          overflow: hidden;
+        a.card-link {
+          display: block;
+          text-decoration: none;
+          color: inherit;
         }
 
-        .art-wrapper img {
-          position: absolute;
-          top: 0; left: 0;
-          width: 100%; height: 100%;
-          object-fit: cover;
-          transition: opacity 0.4s ease;
-        }
-
-        .art-placeholder {
-          position: absolute;
-          top: 50%; left: 50%;
-          transform: translate(-50%, -50%);
-          font-size: 64px;
-          opacity: 0.3;
-        }
-
-        .badge {
-          position: absolute;
-          top: 10px; right: 10px;
-          background: rgba(0,0,0,0.65);
-          backdrop-filter: blur(4px);
-          border-radius: 20px;
-          padding: 4px 10px;
-          font-size: 12px;
-          color: #fff;
+        .main-row {
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 10px;
+          padding: 8px 12px 6px;
         }
 
-        .badge::before { content: "👥"; font-size: 11px; }
+        .art-thumb {
+          flex: 0 0 40px;
+          width: 40px;
+          height: 40px;
+          border-radius: 6px;
+          overflow: hidden;
+          background: #0d0d1a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+        }
+
+        .art-thumb img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
 
         .info {
-          padding: 14px 16px 6px;
+          flex: 1;
+          min-width: 0;
         }
 
         .title {
-          font-size: 16px;
+          font-size: 13px;
           font-weight: 600;
-          line-height: 1.3;
+          line-height: 1.2;
           color: var(--text-primary);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          margin-bottom: 3px;
-        }
-
-        .artist {
-          font-size: 13px;
-          color: var(--accent);
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          margin-bottom: 2px;
         }
 
         .album-line {
-          font-size: 12px;
+          font-size: 11px;
           color: var(--text-secondary);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          margin-top: 2px;
         }
 
-        .meta-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 8px 16px 4px;
-          font-size: 12px;
+        .time-col {
+          flex: 0 0 auto;
+          font-size: 11px;
           color: var(--text-secondary);
-        }
-
-        .rating { display: flex; align-items: center; gap: 4px; }
-        .stars { color: #f0c040; letter-spacing: 1px; }
-
-        .controls {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 12px;
-          padding: 8px 16px 4px;
-        }
-
-        .ctrl-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 7px 18px;
-          border-radius: 20px;
-          border: none;
-          cursor: pointer;
-          font-size: 13px;
-          font-weight: 500;
-          transition: opacity 0.15s, transform 0.1s;
-          outline: none;
-        }
-
-        .ctrl-btn:active { transform: scale(0.95); }
-
-        .btn-play {
-          background: var(--accent);
-          color: var(--card-bg, #1c1c2e);
-        }
-
-        .btn-play.active {
-          opacity: 0.6;
-          cursor: default;
-        }
-
-        .btn-stop {
-          background: rgba(255,255,255,0.08);
-          color: var(--text-secondary);
-          border: 1px solid rgba(255,255,255,0.12);
-        }
-
-        .btn-stop:hover { background: rgba(255,80,80,0.18); color: #ff6060; }
-
-        .progress-container {
-          padding: 4px 16px 14px;
+          text-align: right;
+          white-space: nowrap;
         }
 
         .progress-bar {
-          height: 4px;
+          height: 3px;
           background: var(--progress-bg);
-          border-radius: 2px;
           overflow: hidden;
         }
 
         .progress-fill {
           height: 100%;
           background: var(--progress-fill);
-          border-radius: 2px;
           transition: width 1s linear;
           width: 0%;
-        }
-
-        .time-row {
-          display: flex;
-          justify-content: space-between;
-          font-size: 11px;
-          color: var(--text-secondary);
-          margin-top: 4px;
         }
       </style>
 
       <ha-card class="card">
-        <div class="art-wrapper">
-          ${albumArt
-            ? `<img src="${this._escapeHtml(albumArt)}" alt="Album art" onerror="this.style.display='none'">`
-            : `<div class="art-placeholder">🎵</div>`
-          }
-          <div class="badge">${listeners}</div>
-        </div>
-
-        <div class="info">
-          <div class="title" title="${this._escapeHtml(title)}">${this._escapeHtml(title)}</div>
-          <div class="artist">${this._escapeHtml(artist)}</div>
-          <div class="album-line">${this._escapeHtml(album)}${circle && circle !== artist ? ` · ${this._escapeHtml(circle)}` : ""}${year ? ` (${this._escapeHtml(year)})` : ""}</div>
-        </div>
-
-        <div class="meta-row">
-          <div class="rating">
-            <span class="stars">${this._ratingToStars(rating)}</span>
-            <span>${rating}${timesRated ? ` (${timesRated})` : ""}</span>
+        <a class="card-link" href="${this._escapeHtml(albumUrl)}" target="_blank" rel="noopener noreferrer">
+          <div class="main-row">
+            <div class="art-thumb">
+              ${albumArt
+                ? `<img src="${this._escapeHtml(albumArt)}" alt="Album art" onerror="this.style.display='none'">`
+                : `🎵`
+              }
+            </div>
+            <div class="info">
+              <div class="title" title="${this._escapeHtml(title)}">${this._escapeHtml(title)}</div>
+              <div class="album-line">${this._escapeHtml(albumLine)}</div>
+            </div>
+            <div class="time-col">
+              <span id="gensokyo-elapsed">0:00</span> / <span id="gensokyo-duration">0:00</span>
+            </div>
           </div>
-          <div>Gensokyo Radio</div>
-        </div>
-
-        ${showControls ? `
-        <div class="controls">
-          ${isTargetPlaying
-            ? `<button class="ctrl-btn btn-stop" id="btn-stop" title="Stop linked speaker">⏹ Stop</button>`
-            : `<button class="ctrl-btn btn-play" id="btn-play" title="Play on linked speaker">▶ Play</button>`
-          }
-        </div>
-        ` : ""}
-
-        <div class="progress-container">
           <div class="progress-bar">
             <div class="progress-fill" id="gensokyo-progress"></div>
           </div>
-          <div class="time-row">
-            <span id="gensokyo-elapsed">0:00</span>
-            <span id="gensokyo-duration">0:00</span>
-          </div>
-        </div>
+        </a>
       </ha-card>
     `;
-
-    if (showControls) {
-      this.shadowRoot.getElementById("btn-play")?.addEventListener("click", () => {
-        this._hass.callService("media_player", "play_media", {
-          entity_id: targetEntityId,
-          media_content_id: streamUrl,
-          media_content_type: "music",
-        });
-      });
-
-      this.shadowRoot.getElementById("btn-stop")?.addEventListener("click", () => {
-        this._hass.callService("media_player", "media_stop", {
-          entity_id: targetEntityId,
-        });
-      });
-    }
 
     this._syncPosition(state.attributes);
     this._startProgressTimer();
