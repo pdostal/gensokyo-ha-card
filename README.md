@@ -16,12 +16,13 @@ Displays the currently playing track with album art, animated progress bar, star
 2. Add `https://github.com/pdostal/gensokyo-ha-card` with category **Dashboard**
 3. Install **Gensokyo Radio Card** — no restart needed
 
-### Manual
+### Manual (no HACS)
 
 1. Copy `gensokyo-radio-card.js` to your HA `config/www/` directory
-2. Go to **Settings → Dashboards → Resources** and add:
+2. Go to **Settings → Dashboards → Resources** → Add resource:
    - URL: `/local/gensokyo-radio-card.js`
-   - Type: **JavaScript module**
+   - Resource type: **JavaScript module**
+3. Reload the browser
 
 ---
 
