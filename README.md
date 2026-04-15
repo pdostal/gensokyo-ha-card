@@ -2,9 +2,17 @@
 
 Lovelace dashboard card for [Gensokyo Radio](https://gensokyoradio.net/) — the Touhou music internet radio station.
 
-Displays the currently playing track with album art, animated progress bar, star rating, listener count, and elapsed/duration times. Optionally shows Play/Stop controls for a linked speaker.
-
 > **Requires the [Gensokyo Radio integration](https://github.com/pdostal/gensokyo-ha) to be installed first.**
+
+---
+
+## What it shows
+
+- Album art (16:9 hero layout)
+- Track title, artist, album, and doujin circle
+- Star rating and community rating score
+- Current listener count
+- Animated progress bar with elapsed / total time
 
 ---
 
@@ -15,6 +23,7 @@ Displays the currently playing track with album art, animated progress bar, star
 1. Open **HACS → Frontend** → ⋮ → **Custom repositories**
 2. Add `https://github.com/pdostal/gensokyo-ha-card` with category **Dashboard**
 3. Install **Gensokyo Radio Card** — no restart needed
+4. The card appears in **Edit dashboard → Add card** under *Gensokyo Radio*
 
 ### Manual (no HACS)
 
@@ -28,7 +37,7 @@ Displays the currently playing track with album art, animated progress bar, star
 
 ## Usage
 
-After installing, add the card from **Edit dashboard → Add card** (search for *Gensokyo Radio*), or add it manually in YAML:
+Add from the card picker, or in YAML:
 
 ```yaml
 type: custom:gensokyo-radio-card
