@@ -185,6 +185,7 @@ class GensokyoRadioCard extends HTMLElement {
           color: var(--text-secondary);
           text-align: right;
           white-space: nowrap;
+          margin-top: -3px;
         }
 
         .progress-bar {
@@ -215,7 +216,7 @@ class GensokyoRadioCard extends HTMLElement {
               <div class="album-line">${this._escapeHtml(albumLine)}</div>
             </div>
             <div class="time-col">
-              <span id="gensokyo-elapsed">0:00</span> / <span id="gensokyo-duration">0:00</span>
+              <span id="gensokyo-elapsed">0:00</span>
             </div>
           </div>
           <div class="progress-bar">
@@ -278,11 +279,9 @@ class GensokyoRadioCard extends HTMLElement {
 
     const fill = this.shadowRoot.getElementById("gensokyo-progress");
     const elapsedEl = this.shadowRoot.getElementById("gensokyo-elapsed");
-    const durationEl = this.shadowRoot.getElementById("gensokyo-duration");
 
     if (fill) fill.style.width = `${pct.toFixed(1)}%`;
     if (elapsedEl) elapsedEl.textContent = this._formatTime(clamped);
-    if (durationEl) durationEl.textContent = this._formatTime(this._duration);
   }
 
   // ------------------------------------------------------------------ //
