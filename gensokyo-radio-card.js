@@ -134,6 +134,7 @@ class GensokyoRadioCard extends HTMLElement {
           align-items: center;
           gap: 10px;
           padding: 8px 12px 6px;
+          position: relative;
         }
 
         .art-thumb {
@@ -180,12 +181,14 @@ class GensokyoRadioCard extends HTMLElement {
         }
 
         .time-col {
-          flex: 0 0 auto;
+          position: absolute;
+          top: 6px;
+          right: 12px;
           font-size: 11px;
           color: var(--text-secondary);
           text-align: right;
           white-space: nowrap;
-          margin-top: -3px;
+          pointer-events: none;
         }
 
         .progress-bar {
