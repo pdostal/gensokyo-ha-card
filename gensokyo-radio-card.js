@@ -106,13 +106,24 @@ class GensokyoRadioCard extends HTMLElement {
       <style>
         :host {
           display: block;
-          --card-bg: var(--ha-card-background, #1c1c2e);
+          --card-bg: var(--ha-card-background, var(--card-background-color, #1c1c2e));
           --accent: var(--primary-color, #b39ddb);
           --text-primary: var(--primary-text-color, #e8e8f0);
           --text-secondary: var(--secondary-text-color, #9a9ab0);
-          --progress-bg: rgba(255,255,255,0.1);
+          --thumb-bg: var(--secondary-background-color, #0d0d1a);
+          --progress-bg: var(--divider-color, rgba(255,255,255,0.1));
           --progress-fill: var(--accent);
           font-family: var(--paper-font-body1_-_font-family, sans-serif);
+        }
+
+        @media (prefers-color-scheme: light) {
+          :host {
+            --card-bg: var(--ha-card-background, var(--card-background-color, #ffffff));
+            --text-primary: var(--primary-text-color, #1c1c2e);
+            --text-secondary: var(--secondary-text-color, #5a5a70);
+            --thumb-bg: var(--secondary-background-color, #f0f0f5);
+            --progress-bg: var(--divider-color, rgba(0,0,0,0.1));
+          }
         }
 
         .card {
@@ -143,7 +154,7 @@ class GensokyoRadioCard extends HTMLElement {
           height: 40px;
           border-radius: 6px;
           overflow: hidden;
-          background: #0d0d1a;
+          background: var(--thumb-bg);
           display: flex;
           align-items: center;
           justify-content: center;
