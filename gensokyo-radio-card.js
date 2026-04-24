@@ -37,6 +37,7 @@ class GensokyoRadioCard extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+    this.classList.toggle("light-theme", hass.themes?.darkMode === false);
     const entityId = this._config.entity;
     const state = hass.states[entityId];
 
@@ -116,14 +117,12 @@ class GensokyoRadioCard extends HTMLElement {
           font-family: var(--paper-font-body1_-_font-family, sans-serif);
         }
 
-        @media (prefers-color-scheme: light) {
-          :host {
-            --card-bg: var(--ha-card-background, var(--card-background-color, #ffffff));
-            --text-primary: var(--primary-text-color, #1c1c2e);
-            --text-secondary: var(--secondary-text-color, #5a5a70);
-            --thumb-bg: var(--secondary-background-color, #f0f0f5);
-            --progress-bg: var(--divider-color, rgba(0,0,0,0.1));
-          }
+        :host(.light-theme) {
+          --card-bg: var(--ha-card-background, var(--card-background-color, #ffffff));
+          --text-primary: var(--primary-text-color, #1c1c2e);
+          --text-secondary: var(--secondary-text-color, #5a5a70);
+          --thumb-bg: var(--secondary-background-color, #f0f0f5);
+          --progress-bg: var(--divider-color, rgba(0,0,0,0.1));
         }
 
         .card {
